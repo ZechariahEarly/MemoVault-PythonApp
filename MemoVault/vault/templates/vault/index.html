@@ -1,53 +1,57 @@
-{% extends 'vault/base.html' %}
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
 
 {% block content %}
 
 
 <body class="bg-gray-100 p-6">
-    <div class="max-w-5xl mx-auto space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
-        <!-- Upload Card -->
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-xl font-bold mb-4">Upload Files</h2>
-            <form class="space-y-4" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
+    <div>
+        <div class="max-w-5xl mx-auto space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
+            <!-- Upload Card -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4">Upload Files</h2>
+                <form class="space-y-4" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">File Name</label>
-                    <input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Enter file name">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Upload a file</label>
-                    <input type="file" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                </div>
-                <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Upload
-                </button>
-            </form>
-            <div class="mt-6">
-                <h3 class="text-lg font-semibold mb-2">Uploaded Files</h3>
-                <ul class="space-y-2">
-                    <li class="bg-gray-200 p-2 rounded">file1.txt</li>
-                    <li class="bg-gray-200 p-2 rounded">file2.jpg</li>
-                    <li class="bg-gray-200 p-2 rounded">file3.pdf</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Chat Card -->
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-xl font-bold mb-4">Chat Interface</h2>
-            <div class="border border-gray-300 p-4 rounded h-64 overflow-y-auto">
-                <!-- Chat Messages -->
-                <div class="mb-2">
-                    <p class="text-sm"><strong>Memo:</strong> Hello!</p>
-                    <p class="text-sm"><strong>User:</strong> Hi there!</p>
+                    <div>
+                        {{ form.name|add_label_class:"block text-sm font-medium text-gray-700" }}
+                        {% render_field form.name type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Enter file name" %}
+                    </div>
+                    <div>
+                        {{ form.file|add_label_class:"block text-sm font-medium text-gray-700" }}
+                        {% render_field form.file type="file" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"> %}
+                    </div>
+                    <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Upload
+                    </button>
+                </form>
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold mb-2">Uploaded Files</h3>
+                    <ul class="space-y-2">
+                        <li class="bg-gray-200 p-2 rounded">file1.txt</li>
+                        <li class="bg-gray-200 p-2 rounded">file2.jpg</li>
+                        <li class="bg-gray-200 p-2 rounded">file3.pdf</li>
+                    </ul>
                 </div>
             </div>
-            <div class="mt-4 flex space-x-2">
-                <input type="text" class="flex-grow border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Type your message">
-                <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                    Submit
-                </button>
+
+            <!-- Chat Card -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4">Memo Chat</h2>
+                <div class="border border-gray-300 p-4 rounded h-64 overflow-y-auto">
+                    <!-- Chat Messages -->
+                    <div class="mb-2">
+                        <p class="text-sm"><strong>Memo:</strong> Hello!</p>
+                        <p class="text-sm"><strong>User:</strong> Hi there!</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex space-x-2">
+                    <input type="text" class="flex-grow border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Type your message">
+                    <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        Submit
+                    </button>
+                </div>
             </div>
         </div>
     </div>
