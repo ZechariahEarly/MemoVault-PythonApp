@@ -37,6 +37,7 @@ MANIFEST
 
 #Database Files
 media/
+mydatabase
 
 # User-specific stuff
 .idea/**/workspace.xml
