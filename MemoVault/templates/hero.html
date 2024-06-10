@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{%load static%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemoVault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" media="screen">
+    {% load widget_tweaks %}
+
+    {% block head %}
+
+    {% endblock %}
+</head>
+
+{% block content %}
+
+<body style="background-image: url('{% static 'imgs/base-background.jpg' %}')">
+    <!-- Hero Section -->
+    <div class="h-screen flex items-center justify-center text-white text-center">
+        <div>
+            <h1 class="text-4xl font-bold mb-4">MemoVault</h1>
+            <p class="text-2xl mb-8">Intelligent Data Library.</p>
+            <a href="{% url 'accounts:signup' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">
+                Get Started
+            </a>
+            <a href="https://github.com/ZechariahEarly/MemoVault-PythonApp/wiki" class="bg-transparent border border-white hover:bg-white hover:text-gray-800 text-white font-bold py-2 px-4 rounded">
+                Learn More
+            </a>
+        </div>
+    </div>
+</body>
+{% endblock %}
