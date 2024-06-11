@@ -1,11 +1,12 @@
+from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 
-from .forms import CreateUserForm
+from .forms import CreateUserCreationForm
 
 
 def signup(request):
     if request.method == 'POST':
-        form = CreateUserForm(request.POST)
+        form = CreateUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             # TODO:log the user in
@@ -13,5 +14,6 @@ def signup(request):
         else:
             print(form.errors)
     else:
-        form = {'form': CreateUserForm()}
+        form = {'form': CreateUserCreationForm()}
     return render(request, 'accounts/signup.html', {'form': form})
+
