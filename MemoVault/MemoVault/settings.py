@@ -36,6 +36,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'vault',
     'accounts',
+    'chat',
     'storages',
     'django.contrib.admin',
     'django.contrib.auth',

@@ -22,8 +22,8 @@
         <div class="container mx-auto flex justify-between items-center">
             <a href="{% url 'hero' %}" class="text-xl font-semibold">MeMoVault</a>
             <div class="flex items-center space-x-4">
-<!--                <a href="#" class="hover:text-gray-300">Home</a>-->
-<!--                <a href="#" class="hover:text-gray-300">About</a>-->
+                <a href="{% url 'chat:chat' %}" class="hover:text-gray-300 font-bold">Chat</a>
+                <a href="{% url 'vault:vault' %}" class="hover:text-gray-300 font-bold">Vault</a>
                 {% if user.is_authenticated %}
                 <form method="post" action="{% url 'accounts:logout' %}">
                     {% csrf_token %}

@@ -10,7 +10,7 @@ def signup(request):
         if form.is_valid():
             form.save()
             # TODO:log the user in
-            return redirect('vault:index')
+            return redirect('vault:vault')
         else:
             print(form.errors)
     else:
