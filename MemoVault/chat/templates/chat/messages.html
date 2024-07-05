@@ -3,8 +3,12 @@
     <div>
     {% for message in messages %}
         <!-- Dynamically added chat messages will go here -->
-        <p class="text-sm text-right text-blue-400"> {{ message.user_message }}</p>
-        <p class="text-sm text-left"><strong>Mo:</strong>  {{ message.bot_message }}</p>
+        <div>
+            <p class="text-sm text-right text-blue-400"> {{ message.user_message }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-left"><strong>Mo:</strong>  {{ message.bot_message }}</p>
+        </div>
         <!-- Additional messages can be added here to test the scrolling -->
     {% endfor %}
     </div>

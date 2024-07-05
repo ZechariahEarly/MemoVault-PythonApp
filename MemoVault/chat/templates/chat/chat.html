@@ -13,14 +13,16 @@
                 <!-- Fixed height for the card -->
                 <h2 class="text-xl font-bold mb-4">Chat</h2>
                 <!-- Chat Messages (Scrollable Area) -->
-                <div class="flex-grow overflow-auto">
+                <div id="chatbox" class="flex-grow overflow-auto">
                     <div class="space-y-2 p-2">
                         {% include 'chat/messages.html' %}
                     </div>
                 </div>
                 <!-- Message Input Section (Fixed at the bottom) -->
                 <form
-                        hx-post="{% url 'chat:chat' %}"
+                        hx-post="{% url 'chat:add_conversation' %}"
+                        hx-target="#chatbox"
+                        hx-indicator="#loading"
                         onsubmit="event.preventDefault(); clearInputField();"
                 >
                     {% csrf_token %}
@@ -31,6 +33,9 @@
                         <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                             Send
                         </button>
+                        <a href="{% url 'chat:clear_chat' %}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                            Clear Chat
+                        </a>
                     </div>
                 </form>
             </div>

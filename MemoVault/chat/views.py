@@ -15,16 +15,7 @@ limit = 3750
 
 class ChatView(View):
     def index(request):
-        if request.method == 'POST':
-            client = OpenAI(api_key=request.user.openai_api_key)
-            user_message = request.POST.get('message')
-            prompt = ChatView.create_prompt(request, client=client)
-            bot_message = ChatView.complete(prompt=prompt, client=client)
-            Chat.objects.create(user=request.user, user_message=user_message, bot_message=bot_message)
-            messages = Chat.objects.filter(user=request.user)
-            return render(request, 'chat/messages.html', {'messages': messages})
-        if request.method == 'GET':
-            messages = Chat.objects.filter(user=request.user)
+        messages = Chat.objects.filter(user=request.user)
         return render(request, 'chat/chat.html', {'messages': messages})
 
     def add_conversation(request):
@@ -32,9 +23,9 @@ class ChatView(View):
         user_message = request.POST.get('message')
         prompt = ChatView.create_prompt(request, client=client)
         bot_message = ChatView.complete(prompt=prompt, client=client)
-        Chat.objects.create(user_message=user_message, bot_message=bot_message)
+        Chat.objects.create(user=request.user, user_message=user_message, bot_message=bot_message)
         messages = Chat.objects.filter(user=request.user)
-        return render(request, 'chat/chat.html', {'messages': messages})
+        return render(request, 'chat/messages.html', {'messages': messages})
 
     def clear_chat(request):
         Chat.objects.filter(user=request.user).delete()
