@@ -14,6 +14,7 @@ from langchain_community.vectorstores import ElasticVectorSearch, Pinecone, Weav
 from langchain.chains.question_answering import load_qa_chain
 from langchain_openai import OpenAI
 from pathlib import Path
+from openai import OpenAI
 
 from .forms import DocumentForm
 
@@ -55,9 +56,7 @@ class VaultView(View):
         files = (Document.objects.filter(user=request.user).filter(file__isnull=False))
         file_to_learn = files.last()
         texts = VaultView.clean_document(file_to_learn)
-        embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=request.user.openai_api_key)
-        doc_vectors = embeddings.embed_documents(texts)
-        VaultView.upsert_to_pinecone(request, doc_vectors)
+        VaultView.create_embeddings(texts = texts, request=request)
 
 
     def clean_document(file_to_open):
@@ -77,5 +76,15 @@ class VaultView(View):
         texts = text_splitter.split_text(raw_text)
         return texts
 
-    def upsert_to_pinecone(request, doc_vectors):
-        index.upsert(vectors=[(id, embedding) for id, embedding in zip([request.POST.get("name", "0")], doc_vectors)], namespace=request.user.email)
+    def create_embeddings(texts, request):
+        embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=request.user.openai_api_key)
+        i = 0
+        for text in texts:
+            i += 1
+            res = embeddings.embed_documents(text)
+            VaultView.upsert_to_pinecone(request=request, embedding=res, text=text, i=i)
+
+
+    def upsert_to_pinecone(request, embedding, text, i):
+        metadata = {'text': text}
+        index.upsert(vectors=[(id, embedding, metadata) for id, embedding, text in zip([f'{request.POST.get("name", "0")}_{i}'], embedding, metadata)], namespace=request.user.email)

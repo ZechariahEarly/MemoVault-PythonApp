@@ -15,24 +15,15 @@
                 <!-- Chat Messages (Scrollable Area) -->
                 <div class="flex-grow overflow-auto">
                     <div class="space-y-2 p-2">
-                        {% if messages %}
-                            {% for message in messages %}
-                                <!-- Dynamically added chat messages will go here -->
-                                <p class="text-sm text-left"><strong>Mo:</strong>  {{ message.bot_message }}</p>
-                                <p class="text-sm text-right text-blue-400"> {{ message.user_message }}</p>
-                                <!-- Additional messages can be added here to test the scrolling -->
-                            {% endfor %}
-                        {% endif %}
+                        {% include 'chat/messages.html' %}
                     </div>
                 </div>
                 <!-- Message Input Section (Fixed at the bottom) -->
                 <form
-                        hx-post="{% url 'chat:add_conversation' %}"
-                        hx-target="#chatbox"
-                        hx-indicator="#loading"
-                        id="chat-form"
-
+                        hx-post="{% url 'chat:chat' %}"
+                        onsubmit="event.preventDefault(); clearInputField();"
                 >
+                    {% csrf_token %}
                     <div class="mt-4 flex space-x-2">
                         <input type="text" name="message"
                                class="flex-grow border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

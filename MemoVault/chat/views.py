@@ -4,7 +4,8 @@ import time
 from django.shortcuts import render, redirect
 from django.views import View
 from .models import Chat
-import openai
+from openai import OpenAI
+
 from pinecone import Pinecone
 
 pc = Pinecone(api_key=os.environ['PINECONE_API_KEY'])
@@ -14,13 +15,23 @@ limit = 3750
 
 class ChatView(View):
     def index(request):
-        messages = Chat.objects.filter(user=request.user)
+        if request.method == 'POST':
+            client = OpenAI(api_key=request.user.openai_api_key)
+            user_message = request.POST.get('message')
+            prompt = ChatView.create_prompt(request, client=client)
+            bot_message = ChatView.complete(prompt=prompt, client=client)
+            Chat.objects.create(user=request.user, user_message=user_message, bot_message=bot_message)
+            messages = Chat.objects.filter(user=request.user)
+            return render(request, 'chat/messages.html', {'messages': messages})
+        if request.method == 'GET':
+            messages = Chat.objects.filter(user=request.user)
         return render(request, 'chat/chat.html', {'messages': messages})
 
     def add_conversation(request):
+        client = OpenAI(api_key=request.user.openai_api_key)
         user_message = request.POST.get('message')
-        prompt = ChatView.create_prompt(request)
-        bot_message = ChatView.complete(prompt=prompt)
+        prompt = ChatView.create_prompt(request, client=client)
+        bot_message = ChatView.complete(prompt=prompt, client=client)
         Chat.objects.create(user_message=user_message, bot_message=bot_message)
         messages = Chat.objects.filter(user=request.user)
         return render(request, 'chat/chat.html', {'messages': messages})
@@ -30,18 +41,17 @@ class ChatView(View):
         messages = Chat.objects.filter(user=request.user)
         return render(request, 'chat/chat.html', {'messages': messages})
 
-    def create_prompt(request):
+    def create_prompt(request, client):
         model = "text-embedding-3-small"
-        openai.api_key = request.user.openai_api_key
         query = request.POST.get('message')
-        res = openai.Embedding.create(input=[query], engine=model)
+        res = client.embeddings.create(input=[query], model=model)
 
-        xq = res['data'][0]['embedding']
+        xq = res.data[0].embedding
 
         contexts = []
         time_waited = 0
         while(len(contexts)<3 and time_waited < 60 * 12):
-            res = index.query(vector=xq, top_k=2, include_metadata=True, namespace=request.user.email)
+            res = index.query(vector=xq, top_k=2, include_values=True, include_metadata=True, namespace=request.user.email)
             contexts = contexts + [
                 x['metadata']['text'] for x in res['matches']
             ]
@@ -77,19 +87,17 @@ class ChatView(View):
                 )
         return prompt
 
-    def complete(self, prompt):
+    def complete(prompt, client):
         # instructions
         sys_prompt = "You are a helpful assistant that always answers questions."
         # query text-davinci-003
-        res = openai.ChatCompletion.create(
-            model='gpt-3.5-turbo-0613',
-            messages=[
-                {"role": "system", "content": sys_prompt},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0
-        )
-        return res['choices'][0]['message']['content'].strip()
+        res = client.chat.completions.create(model='gpt-4o',
+        messages=[
+            {"role": "system", "content": sys_prompt},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0)
+        return res.choices[0].message.content.strip()
 
     def get_existing_messages(request) -> list:
         """
