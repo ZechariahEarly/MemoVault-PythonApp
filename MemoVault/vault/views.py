@@ -60,12 +60,15 @@ class VaultView(View):
 
 
     def clean_document(file_to_open):
+        # load in PDF
         reader = pdfplumber.open(file_to_open.file)
         raw_text = ''
+        # get raw text from PDF
         for i, page in enumerate(reader.pages):
             text = page.extract_text()
             if text:
                 raw_text += text
+        # split text into chunks for vector embedding
         text_splitter = CharacterTextSplitter(
             separator="\n",
             chunk_size=1000,
@@ -81,7 +84,9 @@ class VaultView(View):
         i = 0
         for text in texts:
             i += 1
+            # create embeddings for each chunk of text
             res = embeddings.embed_documents(text)
+            # upsert embedding, text, and incremented id to pinecone database
             VaultView.upsert_to_pinecone(request=request, embedding=res, text=text, i=i)
 
 

@@ -19,15 +19,19 @@ class ChatView(View):
         return render(request, 'chat/chat.html', {'messages': messages})
 
     def add_conversation(request):
+        # new conversation
         client = OpenAI(api_key=request.user.openai_api_key)
         user_message = request.POST.get('message')
+        # create prompt
         prompt = ChatView.create_prompt(request, client=client)
+        # send built prompt with context from pinecone to gpt-4o model
         bot_message = ChatView.complete(prompt=prompt, client=client)
         Chat.objects.create(user=request.user, user_message=user_message, bot_message=bot_message)
         messages = Chat.objects.filter(user=request.user)
         return render(request, 'chat/messages.html', {'messages': messages})
 
     def clear_chat(request):
+        # clear previous chats
         Chat.objects.filter(user=request.user).delete()
         messages = Chat.objects.filter(user=request.user)
         return render(request, 'chat/chat.html', {'messages': messages})
@@ -35,6 +39,7 @@ class ChatView(View):
     def create_prompt(request, client):
         model = "text-embedding-3-small"
         query = request.POST.get('message')
+        # embed the query using the same model as the doc embeddings
         res = client.embeddings.create(input=[query], model=model)
 
         xq = res.data[0].embedding
@@ -42,7 +47,9 @@ class ChatView(View):
         contexts = []
         time_waited = 0
         while(len(contexts)<3 and time_waited < 60 * 12):
+            # query the pinecone DB using the embeddings from the users question and find the most similar
             res = index.query(vector=xq, top_k=2, include_values=True, include_metadata=True, namespace=request.user.email)
+            # extract the related text from the metadata for each embedding match
             contexts = contexts + [
                 x['metadata']['text'] for x in res['matches']
             ]
@@ -54,6 +61,7 @@ class ChatView(View):
             print("Timed out waiting for contexts to be retrieved.")
             contexts = ["No contexts retrieved. Try to answer the question yourself!"]
 
+        # build a propt to send to the ai model so that it will answer correctly and concisely bases upon the given context from the learned docs
         prompt_start = (
                 "Answer the question based on the context below.\n\n" +
                 "Context:\n"
@@ -79,9 +87,9 @@ class ChatView(View):
         return prompt
 
     def complete(prompt, client):
-        # instructions
+        # instructions for model
         sys_prompt = "You are a helpful assistant that always answers questions."
-        # query text-davinci-003
+        # query gpt-4o
         res = client.chat.completions.create(model='gpt-4o',
         messages=[
             {"role": "system", "content": sys_prompt},
