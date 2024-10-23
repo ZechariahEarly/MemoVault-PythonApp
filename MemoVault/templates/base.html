@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{%load static%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemoVault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@2.0.0" integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" crossorigin="anonymous"></script>
+
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" media="screen">
+    {% load widget_tweaks %}
+
+    {% block head %}
+
+    {% endblock %}
+</head>
+
+<body style="background-image: url('{% static 'imgs/background-image.svg' %}')">
+    <!-- Navbar -->
+    <nav class="bg-white p-4 mb-8 text-black rounded-lg shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{% url 'hero' %}" class="text-xl font-semibold">MeMoVault</a>
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'chat:chat' %}" class="hover:text-gray-300 font-bold">Chat</a>
+                <a href="{% url 'vault:vault' %}" class="hover:text-gray-300 font-bold">Vault</a>
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Logout</button>
+                </form>
+                {% else %}
+                <a href="{% url 'accounts:signup' %}" class="hover:text-gray-300">Sign up</a>
+                <a href="{% url 'accounts:login' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+{% block content %}
+
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+
+    <body class="bg-gray-100 p-6">
+    <div>
+        <div class="max-w-3xl mx-auto space-y-6 md:space-y-0 md:grid  md:gap-6"> {#  max-w-5xl  md:grid-cols-2#}
+            <!-- Chat Card -->
+            <!-- Chat Card -->
+            <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col" style="max-height: 80vh;">
+                <!-- Fixed height for the card -->
+                <h2 class="text-xl font-bold mb-4">Chat</h2>
+                <!-- Chat Messages (Scrollable Area) -->
+                <div id="chatbox" class="flex-grow overflow-auto">
+                    <div class="space-y-2 p-2">
+                        {% include 'chat/messages.html' %}
+                    </div>
+                </div>
+                <!-- Message Input Section (Fixed at the bottom) -->
+                <form
+                        hx-post="{% url 'chat:add_conversation' %}"
+                        hx-target="#chatbox"
+                        hx-indicator="#loading"
+                        onsubmit="event.preventDefault(); clearInputField();"
+                >
+                    {% csrf_token %}
+                    <div class="mt-4 flex space-x-2">
+                        <input type="text" name="message"
+                               class="flex-grow border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Type your message">
+                        <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                            Send
+                        </button>
+                        <a href="{% url 'chat:clear_chat' %}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                            Clear Chat
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </body>
+
+{% endblock %}
